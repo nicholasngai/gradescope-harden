@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+
+def main() -> None:
+    # Run the original /autograder/run_autograder that was moved to
+    # /autograder/run_autograder.orig by our setup.sh.
+    argv = list(sys.argv)
+    argv[0] = '/autograder/run_autograder.orig'
+    os.execv(argv[0], argv)
+
+if __name__ == '__main__':
+    main()
