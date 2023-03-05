@@ -1,11 +1,5 @@
 #!/bin/sh
 
-# setup.sh re-execs the original /autograder/setup.sh with GRADESCOPE_HARDEN
-# set, so just return when this is already set.
-if [ "${GRADESCOPE_HARDEN+x}" = 'x' ]; then
-    return
-fi
-
 set -eux
 
 GRADESCOPE_HARDEN_SRC=/autograder/source/gradescope-harden/source
@@ -28,6 +22,3 @@ pip3 install -r "$GRADESCOPE_HARDEN_SRC/requirements.txt"
 # with our own run_autograder.
 mv /autograder/run_autograder /autograder/run_autograder.orig
 cp "$GRADESCOPE_HARDEN_SRC/run_autograder" /autograder/run_autograder
-
-# Re-exec calling script with GRADESCOPE_HARDEN set.
-GRADESCOPE_HARDEN=true exec "$SHELL" "$0" "$@"

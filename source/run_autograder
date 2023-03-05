@@ -2,9 +2,8 @@
 
 from dataclasses import dataclass
 import errno
-import os
 import socket
-import sys
+import subprocess
 
 import seccomp
 import yaml
@@ -38,9 +37,7 @@ def main() -> None:
 
     # Run the original /autograder/run_autograder that was moved to
     # /autograder/run_autograder.orig by our setup.sh.
-    argv = list(sys.argv)
-    argv[0] = '/autograder/run_autograder.orig'
-    os.execv(argv[0], argv)
+    subprocess.run(['/autograder/run_autograder.orig'])
 
 if __name__ == '__main__':
     main()
