@@ -1,9 +1,24 @@
 #!/usr/bin/env python3
 
+from dataclasses import dataclass
 import os
 import sys
 
+import yaml
+
+@dataclass(frozen=True)
+class Config:
+    pass
+
+def read_config() -> Config:
+    with open('/autograder/source/gradescope-harden.yml', 'r') as f:
+        config_obj = yaml.full_load(f)
+    return Config()
+
 def main() -> None:
+    # Read the config file.
+    config = read_config()
+
     # Run the original /autograder/run_autograder that was moved to
     # /autograder/run_autograder.orig by our setup.sh.
     argv = list(sys.argv)
