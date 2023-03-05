@@ -20,7 +20,8 @@ fi
 apt-get update
 apt-get install -y \
     python3 \
-    python3-pip
+    python3-pip \
+    python3-seccomp
 pip3 install -r "$GRADESCOPE_HARDEN_SRC/requirements.txt"
 
 # Move /autograder/run_autograder to /autograder/run_autograder.orig and replace

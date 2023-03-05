@@ -1,23 +1,40 @@
 #!/usr/bin/env python3
 
 from dataclasses import dataclass
+import errno
 import os
+import socket
 import sys
 
+import seccomp
 import yaml
 
 @dataclass(frozen=True)
 class Config:
-    pass
+    enable_networking: bool
 
 def read_config() -> Config:
     with open('/autograder/source/gradescope-harden.yml', 'r') as f:
         config_obj = yaml.full_load(f)
-    return Config()
+    if 'enable_networking' not in config_obj or type(config_obj['enable_networking']) != bool:
+        raise ValueError('enable_networking must be a boolean!')
+    return Config(
+        enable_networking=config_obj['enable_networking'],
+    )
+
+def disable_networking() -> None:
+    f = seccomp.SyscallFilter(seccomp.ALLOW)
+    f.add_rule(seccomp.ERRNO(errno.EACCES), 'socket', seccomp.Arg(0, seccomp.EQ, socket.AF_INET))
+    f.add_rule(seccomp.ERRNO(errno.EACCES), 'socket', seccomp.Arg(0, seccomp.EQ, socket.AF_INET6))
+    f.load()
 
 def main() -> None:
     # Read the config file.
     config = read_config()
+
+    # Disable networking if requested.
+    if not config.enable_networking:
+        disable_networking()
 
     # Run the original /autograder/run_autograder that was moved to
     # /autograder/run_autograder.orig by our setup.sh.
