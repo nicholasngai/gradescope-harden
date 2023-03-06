@@ -15,6 +15,7 @@ apt-get update
 apt-get install --no-install-recommends -y \
     gcc \
     libc6-dev \
+    libseccomp-dev \
     libyaml-dev \
     make
 

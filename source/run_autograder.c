@@ -5,6 +5,25 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include "config.h"
+#include "disable_networking.h"
+
+/* The launch function, which should be called by both the parent and the child
+ * with the same arguments other than child_pid. */
+static int launch_func(pid_t child_pid, const struct config *config) {
+    int ret;
+
+    if (config->disable_networking) {
+        ret = disable_networking(child_pid);
+        if (ret) {
+            goto exit;
+        }
+    }
+
+    ret = 0;
+
+exit:
+    return ret;
+}
 
 int main(void) {
     struct config config;
@@ -25,6 +44,11 @@ int main(void) {
     } else if (child == 0) {
         /* Child. */
 
+        /* Call launch_func as child. */
+        if (launch_func(0, &config)) {
+            abort();
+        }
+
         /* Execute the original /autograder/run_autograder that was moved to
          * /autograder/run_autograder.orig by our setup.sh */
         char *argv[] = {"/autograder/run_autograder.orig", NULL};
@@ -33,6 +57,13 @@ int main(void) {
         }
     } else {
         /* Parent. */
+
+        /* Call launch_func as parent. */
+        ret = launch_func(child, &config);
+        if (ret) {
+            goto exit_kill_child;
+        }
+
         int child_ret;
         if (waitpid(child, &child_ret, 0) == -1) {
             perror("waitpid");
