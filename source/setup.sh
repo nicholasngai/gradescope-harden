@@ -12,11 +12,14 @@ fi
 
 # Install dependencies.
 apt-get update
-apt-get install -y \
-    python3 \
-    python3-pip \
-    python3-seccomp
-pip3 install -r "$GRADESCOPE_HARDEN_SRC/requirements.txt"
+apt-get install --no-install-recommends -y \
+    gcc \
+    libc6-dev \
+    libyaml-dev \
+    make
+
+# Build autograder.
+make -C "$GRADESCOPE_HARDEN_SRC" run_autograder
 
 # Move /autograder/run_autograder to /autograder/run_autograder.orig and replace
 # with our own run_autograder.

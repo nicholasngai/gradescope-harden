@@ -1,1 +1,4 @@
+*.o
+*.d
+source/run_autograder
 example/autograder.zip
