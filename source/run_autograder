@@ -22,22 +22,30 @@ def read_config() -> Config:
     )
 
 def disable_networking() -> None:
+    """Disable networking using seccomp to filter out calls to socket with
+    family AF_INET or AF_INET6."""
     f = seccomp.SyscallFilter(seccomp.ALLOW)
     f.add_rule(seccomp.ERRNO(errno.EACCES), 'socket', seccomp.Arg(0, seccomp.EQ, socket.AF_INET))
     f.add_rule(seccomp.ERRNO(errno.EACCES), 'socket', seccomp.Arg(0, seccomp.EQ, socket.AF_INET6))
     f.load()
 
-def main() -> None:
-    # Read the config file.
-    config = read_config()
-
+def autograder_preexec(config: Config) -> None:
+    """The function executed by the child process before execv'ing by the
+    subprocess module. This will set up any state needed for the child process.
+    """
     # Disable networking if requested.
     if not config.enable_networking:
         disable_networking()
 
+def main() -> None:
+    # Read the config file.
+    config = read_config()
+
     # Run the original /autograder/run_autograder that was moved to
     # /autograder/run_autograder.orig by our setup.sh.
-    subprocess.run(['/autograder/run_autograder.orig'])
+    subprocess.run(['/autograder/run_autograder.orig'],
+                   close_fds=True,
+                   preexec_fn=lambda: autograder_preexec(config))
 
 if __name__ == '__main__':
     main()
