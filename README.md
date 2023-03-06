@@ -7,12 +7,12 @@ Gradescope-Harden is a drop-in solution for Gradescope autograders to provide ha
 The most basic `gradescope-harden.yml` file looks like this:
 
 ```yaml
-enable_networking: false
+disable_networking: true
 ```
 
 ### Network Isolation
 
-If `enable_networking` is set to `true`, Gradescope-Harden allows the operator to disable outgoing network connections to prevent issues like test case exfiltration and reverse shells. This is implemented as a seccomp filter for `socket` syscalls of domain AF\_INET or AF\_INET6.
+If `disable_networking` is set to `true`, Gradescope-Harden allows the operator to disable outgoing network connections to prevent issues like test case exfiltration and reverse shells. This is implemented as a seccomp filter for `socket` syscalls of domain AF\_INET or AF\_INET6.
 
 **Note:** This will also disable connections to `localhost`, which may interfere with some autograders. A fix is currently being implemented for this.
 

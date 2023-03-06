@@ -10,15 +10,15 @@ import yaml
 
 @dataclass(frozen=True)
 class Config:
-    enable_networking: bool
+    disable_networking: bool
 
 def read_config() -> Config:
     with open('/autograder/source/gradescope-harden.yml', 'r') as f:
         config_obj = yaml.full_load(f)
-    if 'enable_networking' not in config_obj or type(config_obj['enable_networking']) != bool:
-        raise ValueError('enable_networking must be a boolean!')
+    if 'disable_networking' not in config_obj or type(config_obj['disable_networking']) != bool:
+        raise ValueError('disable_networking must be a boolean!')
     return Config(
-        enable_networking=config_obj['enable_networking'],
+        disable_networking=config_obj['disable_networking'],
     )
 
 def disable_networking() -> None:
@@ -34,7 +34,7 @@ def autograder_preexec(config: Config) -> None:
     subprocess module. This will set up any state needed for the child process.
     """
     # Disable networking if requested.
-    if not config.enable_networking:
+    if config.disable_networking:
         disable_networking()
 
 def main() -> None:
