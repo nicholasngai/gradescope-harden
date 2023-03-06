@@ -3,6 +3,6 @@
 
 #include <sys/types.h>
 
-int disable_networking(pid_t child_pid);
+int disable_networking(pid_t child_pid, int comm_sock);
 
 #endif
